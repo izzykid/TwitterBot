@@ -77,7 +77,7 @@ public class BrowserFunctions {
 		((JavascriptExecutor) driver).executeScript("window.open()");
 		ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
 		driver.switchTo().window(tabs.get(1));
-		driver.get("https://www.gmail.com/");
+		driver.get("https://mail.google.com/mail/?ui=html");
 		
 		// Enters email
 		driver.findElement(By.xpath("//*[@id=\"identifierId\"]")).sendKeys(email.substring(0, email.indexOf('+')) + email.substring(email.indexOf('@')));
@@ -93,15 +93,53 @@ public class BrowserFunctions {
 		}
 		driver.findElement(By.xpath("/html/body/div[1]/div[1]/div[2]/div[2]/div/div/div[2]/div/div[1]/div/form/content/section/div/content/div[1]/div/div[1]/div/div[1]/input")).sendKeys(emailPassword);
 		// Clicks next
-		driver.findElement(By.xpath("//*[@id=\"passwordNext\"]/div[2]")).click();
+		driver.findElement(By.xpath("//*[@id=\"passwordNext\"]/content/span")).click();
 		
-		// TODO: Make the program search through emails to find the verification email
-		Utils.waitUntilClickable("//*[@id=\":2u\"]", driver);
-		driver.findElement(By.xpath("//*[@id=\":2u\"]")).click();
-		driver.findElement(By.xpath("//*[@id=\":ij\"]/div[1]/div[2]/div/table/tbody/tr[2]/td")).click();
+		// Confirms HTML version of gmail
+//		Utils.waitUntilClickable("//*[@id=\"maia-main\"]/form/p/input", driver);
+//		driver.findElement(By.xpath("//*[@id=\"maia-main\"]/form/p/input")).click();
 		
+		// Opens top email
+		Utils.waitUntilClickable("/html/body/table[2]/tbody/tr/td[2]/table[1]/tbody/tr/td[2]/form/table[2]/tbody/tr[1]/td[3]/a/span/b", driver);
+		driver.findElement(By.xpath("/html/body/table[2]/tbody/tr/td[2]/table[1]/tbody/tr/td[2]/form/table[2]/tbody/tr[1]/td[3]/a/span/b")).click();
+
+		// Grabs verification code
+		Utils.scrollToElement("/html/body/table[2]/tbody/tr/td[2]/table[1]/tbody/tr/td[2]/table[4]/tbody/tr/td/table[7]/tbody/tr[4]/td/div/div/table/tbody/tr[1]/td/table/tbody/tr[1]/td/table/tbody/tr/td[2]/table/tbody/tr[10]/td", driver);
+		Utils.waitUntilVisible("/html/body/table[2]/tbody/tr/td[2]/table[1]/tbody/tr/td[2]/table[4]/tbody/tr/td/table[7]/tbody/tr[4]/td/div/div/table/tbody/tr[1]/td/table/tbody/tr[1]/td/table/tbody/tr/td[2]/table/tbody/tr[10]/td", driver);
+		String verificationCode = driver.findElement(By.xpath("/html/body/table[2]/tbody/tr/td[2]/table[1]/tbody/tr/td[2]/table[4]/tbody/tr/td/table[7]/tbody/tr[4]/td/div/div/table/tbody/tr[1]/td/table/tbody/tr[1]/td/table/tbody/tr/td[2]/table/tbody/tr[10]/td")).getText();
+		System.out.println(verificationCode);
 		
+		// Closes the gmail tab
+		driver.switchTo().window(tabs.get(0));
 		
+		// Enters verification code and hits next
+		Utils.waitUntilVisible("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[3]/label/div/div/input", driver);
+		driver.findElement(By.xpath("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[3]/label/div/div/input")).sendKeys(verificationCode);
+		driver.findElement(By.xpath("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/div[3]/div/div/span")).click();
+		//*[@id="react-root"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[3]/label/div/div/input
+		
+		// Creates the password
+		Utils.waitUntilVisible("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div[3]/div[1]/label/div/div/input", driver);
+		driver.findElement(By.xpath("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div[3]/div[1]/label/div/div/input")).sendKeys(password);
+		driver.findElement(By.xpath("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/div[3]/div/div/span")).click();
+		
+		// TODO: Add profile pictures here?
+		// Clicks skip adding profile picture for now
+		Utils.waitUntilClickable("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/div[3]/div/div/span", driver);
+		driver.findElement(By.xpath("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/div[3]/div/div/span")).click();
+		
+		// TODO: Add a bio here?
+		// Clicks skip adding a bio for now
+		Utils.waitUntilClickable("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/div[3]/div/div/span", driver);
+		driver.findElement(By.xpath("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div/div/div[3]/div/div/span")).click();
+		
+		// Clicks on do not find friends by contacts
+		Utils.waitUntilClickable("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[2]/div[2]/div/span", driver);
+		driver.findElement(By.xpath("//*[@id=\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[2]/div[2]/div/span")).click();
+		
+		// Skips finding categories that you are interested in
+		Utils.waitUntilClickable("//*[@id\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[2]/div[2]/div/span", driver);
+		driver.findElement(By.xpath("//*[@id\"react-root\"]/div[2]/div/div/div/div/div[2]/div[2]/div/div/div[2]/div[2]/div/div/div/div[2]/div[2]/div/span")).click();
 		
 		return driver;
 	}
