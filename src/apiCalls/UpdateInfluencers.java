@@ -22,21 +22,18 @@ public class UpdateInfluencers extends APICall {
 	 * @throws JSONException 
 	 */
 	@SuppressWarnings("unchecked")
-	public UpdateInfluencers() throws TwitterException, IOException {
-		IDs ids = twitter.getFriendsIDs(twitter.getId(), -1); // Gets following list
+	public UpdateInfluencers(String username) throws TwitterException, IOException {
+		System.out.println("Update Influencers");
+		IDs ids = twitter.getFriendsIDs(username, -1); // Gets following list
 		ResponseList<User> users = twitter.lookupUsers(ids.getIDs()); // Generates a list of users from their ID's
-		
-//		//Displays the users screen name and id in console
-//		for(int i = 0; i < users.size(); i++){
-//			System.out.println(users.get(i).getScreenName() + ": " + users.get(i).getId());
-//		}
+		// Creates a JSONObject to be used for storing users and their IDs
 		JSONObject json = new JSONObject();
 		FileWriter file = new FileWriter("res/Influencers.json");
-		if(json.containsKey(Long.toString(Long.MAX_VALUE)))
-			json.remove(Long.toString(Long.MAX_VALUE));
+		if(json.containsKey("username"))
+			json.remove("username");
 		// Populates Influencers.txt with accounts under "Following"
 		for(int i = 0; i < users.size(); i++) {
-			json.put(users.get(i).getId(), users.get(i).getScreenName());
+			json.put(users.get(i).getScreenName(), "2");
 		}
 		file.write(json.toString());
 		file.close();

@@ -12,12 +12,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
 
 @SuppressWarnings("serial")
 public class Launcher extends JFrame {
 
 	private JPanel contentPane;
 	private static TwitterApp app;
+	private static JTextField influencerTracker;
+	private static JTextField maxFollow;
+	private static JTextField pauseTime;
+	private static JTextField targetAmount;
 	
 	/**
 	 * Launch the application.
@@ -52,23 +58,95 @@ public class Launcher extends JFrame {
 		JPanel panel = new JPanel();
 		panel.setForeground(new Color(250, 235, 215));
 		panel.setBackground(new Color(250, 235, 215));
+		
+		influencerTracker = new JTextField();
+		influencerTracker.setColumns(10);
+		
+		JLabel lblGrabAllFollowing = new JLabel("Grab All Following of this @");
+		
+		maxFollow = new JTextField();
+		maxFollow.setColumns(10);
+		
+		JLabel lblGrabFollowersFrom = new JLabel("Grab Followers From Influencers");
+		
+		JLabel lblFollowAmount = new JLabel("Follow Amount");
+		
+		pauseTime = new JTextField();
+		pauseTime.setColumns(10);
+		
+		JLabel lblBreakTimeIn = new JLabel("Break Time In Between");
+		
+		JLabel lblseconds = new JLabel("(seconds)");
+		
+		targetAmount = new JTextField();
+		targetAmount.setColumns(10);
+		
+		JLabel lblGrabTargetAmount = new JLabel("Grab Target Amount");
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(263, Short.MAX_VALUE))
+					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+								.addComponent(pauseTime, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+								.addComponent(maxFollow, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+								.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+									.addComponent(lblBreakTimeIn)
+									.addComponent(lblFollowAmount))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addComponent(lblseconds)
+									.addGap(39))))
+						.addComponent(influencerTracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblGrabAllFollowing)
+						.addComponent(lblGrabFollowersFrom)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblGrabTargetAmount)))
+					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(panel, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
+				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(maxFollow, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblFollowAmount))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(pauseTime, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblBreakTimeIn))
+							.addGap(39))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addContainerGap(58, Short.MAX_VALUE)
+							.addComponent(lblseconds)
+							.addGap(29)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblGrabAllFollowing)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(influencerTracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGap(41)
+					.addComponent(lblGrabFollowersFrom)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblGrabTargetAmount))
+					.addGap(11))
 		);
 		
-		JButton followUsers = new JButton("Follow Users");
-		followUsers.setForeground(Color.BLACK);
-		followUsers.addActionListener(new ActionListener() {
+		JButton grabTargetUsers = new JButton("Grab Targets");
+		grabTargetUsers.setForeground(Color.BLACK);
+		grabTargetUsers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				app.getButtonManager().followTargets = true;
+				app.getButtonManager().grabTargets = true;
 			}
 		});
 		
@@ -79,37 +157,32 @@ public class Launcher extends JFrame {
 			}
 		});
 		
-		JButton test = new JButton("Test");
-		test.addActionListener(new ActionListener() {
+		JButton followUsers = new JButton("Follow Users");
+		followUsers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				app.getButtonManager().test = true;
+				app.getButtonManager().followUsers = true;
 			}
 		});
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(12)
-					.addComponent(followUsers, GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-					.addGap(12))
-				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(updateInfluencers, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(test, GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addComponent(followUsers, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+						.addComponent(updateInfluencers, GroupLayout.PREFERRED_SIZE, 151, Short.MAX_VALUE)
+						.addComponent(grabTargetUsers, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(5)
+					.addContainerGap()
 					.addComponent(followUsers)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGap(85)
 					.addComponent(updateInfluencers)
-					.addPreferredGap(ComponentPlacement.RELATED, 145, Short.MAX_VALUE)
-					.addComponent(test)
+					.addPreferredGap(ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+					.addComponent(grabTargetUsers)
 					.addContainerGap())
 		);
 		panel.setLayout(gl_panel);
@@ -119,4 +192,21 @@ public class Launcher extends JFrame {
 	public static TwitterApp getApp(){
 		return app;
 	}
+
+	public static JTextField getInfluencerTracker() {
+		return influencerTracker;
+	}
+
+	public static JTextField getPauseTime() {
+		return pauseTime;
+	}
+
+	public static JTextField getMaxFollow() {
+		return maxFollow;
+	}
+
+	public static JTextField getTargetAmount() {
+		return targetAmount;
+	}
+
 }

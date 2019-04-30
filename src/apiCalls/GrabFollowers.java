@@ -29,58 +29,41 @@ public class GrabFollowers extends APICall {
 	 * @throws ParseException 
 	 */
 	@SuppressWarnings("unchecked")
-	public GrabFollowers(long influencerID, int grabAmount) throws TwitterException, IOException, ParseException {
+	public GrabFollowers(String influencer, int grabAmount) throws TwitterException, IOException, ParseException {
+		System.out.println("Grab " + influencer + "'s followers");
 		JSONParser parser = new JSONParser();
 		Object obj = parser.parse(new FileReader("res/TargetedUsers.json"));
 		JSONObject targetUsers = (JSONObject) obj;
 		FileWriter file = new FileWriter("res/TargetedUsers.json");
 		int indexOffset = 0;
 		
-		if(targetUsers.containsKey(Long.toString(Long.MAX_VALUE)))
-			targetUsers.remove(Long.toString(Long.MAX_VALUE));
+		if(targetUsers.containsKey("username"))
+			targetUsers.remove("username");
 		// Get followers of the influencer
-		IDs fids = twitter.getFollowersIDs(influencerID, -1); // Get influencer's followers
-		System.out.println("Amount of ids: " + fids.getIDs().length);
-		// Start at a random index of the IDs to maximize followers grabbed subtracted by the grabAmount to prevent
-		// and IndexOutOfBoundsException
-//		int startIndex = (int) Math.round(Math.random() * fids.getIDs().length) - grabAmount;
-		// Adds influencer to first index to instantiate the ResponseList
-		ResponseList<User> users = twitter.lookupUsers(influencerID); 
-//		for(int i = startIndex; i < startIndex + grabAmount; i++) {
-		for(int i = 0; i < grabAmount; i++) {
-//			If the HashSet already contains that user ID, skip adding that user again and increment grabAmount
-			synchronized(this) {
-				if(targetUsers.containsKey(Long.toString(fids.getIDs()[i]))) {
-					int tempOffset = indexOffset;
-					indexOffset++;
-					if(grabAmount != tempOffset + 1)
-						grabAmount = tempOffset + 1;
-					System.out.println("Before: " + tempOffset + " After: " + indexOffset);
-					System.out.println("Grab before: " + grabAmount);
-					grabAmount++;
-					System.out.println("Grab after: " + grabAmount);
-					continue;
+		try {
+			IDs fids = twitter.getFollowersIDs(influencer, -1); // Get influencer's followers
+			// Adds influencer to first index to instantiate the ResponseList
+			ResponseList<User> users = twitter.lookupUsers(influencer); 
+			for(int i = 0; i < grabAmount; i++) {
+				//If the JSONObject already contains that user ID, skip adding that user again and increment grabAmount
+				synchronized(this) {
+					if(targetUsers.containsKey(twitter.lookupUsers(fids.getIDs()[i]).get(0).getScreenName())) {
+						indexOffset++;
+						grabAmount++;
+						continue;
+					}
 				}
+				users.add(twitter.lookupUsers(fids.getIDs()[i]).get(0));
+				System.out.println(users.get(i + 1 - indexOffset).getScreenName());
+				targetUsers.put(users.get(i + 1 - indexOffset).getScreenName(), "0");
 			}
-//			if(targetUsers.containsKey(Long.toString(fids.getIDs()[i]))) {
-//				int tempGrabAmount = grabAmount;
-//				grabAmount++;
-//				if(grabAmount != tempGrabAmount + 1)
-//					grabAmount = tempGrabAmount + 1;
-//				System.out.println(grabAmount);
-//				continue;
-//			}
-			users.add(twitter.lookupUsers(fids.getIDs()[i]).get(0));
-			System.out.println(fids.getIDs()[i] + ": " + users.get(i - indexOffset/* - startIndex*/).getScreenName());
-			targetUsers.put(Long.toString(fids.getIDs()[i]), users.get(i - indexOffset/* - startIndex*/).getScreenName());
+		}
+		// If rate limit is reached, or there aren't enough unique IDs that were grabbed, don't throw an error.
+		// Instead, just add the targeted users that were grabbed to TargetedUsers.json
+		catch(IndexOutOfBoundsException | TwitterException e) { 
+			
 		}
 		file.write(targetUsers.toString());
 		file.close();
-//		// Populates TargetedUsers.txt with accounts that are following accounts from Influencers.txt
-//		BufferedWriter writer = new BufferedWriter(new FileWriter("res/TargetedUsers.txt", true));
-//		for(int i = 1; i < users.size(); i++) {
-//			writer.append(users.get(i).getScreenName() + "," + users.get(i).getId() + "," + "0" + "\n");
-//		}
-//		writer.close();
 	}
 }

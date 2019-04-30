@@ -31,23 +31,17 @@ public class TwitterApp implements Runnable{
 		if(!new File("res/TargetedUsers.json").exists()) {
 			FileWriter file = new FileWriter("res/TargetedUsers.json");
 			JSONObject obj = new JSONObject();
-			obj.put(Long.toString(Long.MAX_VALUE), "username");
+			obj.put("username", "2");
 			file.write(obj.toString());
 			file.close();
 		}
 		if(!new File("res/Influencers.json").exists()) {
 			FileWriter file = new FileWriter("res/Influencers.json");
 			JSONObject obj = new JSONObject();
-			obj.put(Long.toString(Long.MAX_VALUE), "username");
+			obj.put("username", "2");
 			file.write(obj.toString());
 			file.close();
 		}
-//		try {
-//			sheet = new SpreadSheet(Constants.Spread_Sheet_Path);
-//			sheet.populateSheet();
-//		} catch (InvalidFormatException | IOException e1) {
-//			e1.printStackTrace();
-//		}
 	}
 	
 	public ButtonManager getButtonManager(){

@@ -2,19 +2,27 @@ package interact;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.Map.Entry;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import twitter4j.IDs;
+import utils.StopWatch;
 import utils.Utils;
 
 public class FollowUsers {
@@ -28,8 +36,22 @@ public class FollowUsers {
 	 * @return WebDriver - the WebDriver object that is associated with the browser used to log into twitter
 	 * @throws InterruptedException 
 	 * @throws IOException 
+	 * @throws ParseException 
 	 */ 
-	public FollowUsers(ArrayList<String> targetUsers, String username, String password) throws InterruptedException, IOException { //kyle_foster2
+	public FollowUsers(String username, String password, int maxFollow, int pauseTime) throws InterruptedException, IOException, ParseException { 
+
+		// Instantiate necessary JSON variables
+		JSONParser parser = new JSONParser();
+		Object obj = parser.parse(new FileReader("res/TargetedUsers.json"));
+		JSONObject targetUsers = (JSONObject) obj;
+		Iterator it = targetUsers.entrySet().iterator();
+		JSONObject followingUsers = new JSONObject();
+		FileWriter file = new FileWriter("res/TargetedUsers.json");
+		
+		// Creates a StopWatch object to pause in between following users
+		StopWatch timer = new StopWatch();
+		timer.start();
+		
 		// Prepares WebDriver to use ChromeDriver
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 		// Creates new WebDriver object
@@ -69,7 +91,7 @@ public class FollowUsers {
 				}
 			}
 			sc.close();
-			// Open the url of the first targeted user
+			// Open twitter to load cookies
 			driver.get("https://www.twitter.com/" + targetUsers.get(0));
 			// Add all cookie objects to the WebDriver object
 			for(Cookie cookie : cookies) {
@@ -92,25 +114,44 @@ public class FollowUsers {
 			driver.findElement(By.xpath("//*[@id=\"signin-dropdown\"]/div[3]/form/input[1]")).click();
 		}
 		
-		// Attempt to follow all users from targetUsers
-		for(int i = 1; i < targetUsers.size(); i++) {
-			driver.get("https://www.twitter.com/" + targetUsers.get(i));
-			// Click follow
-			try { // If the account in control isn't following already, attempt to follow
-				Utils.waitUntilClickable("//*[@id=\"page-container\"]/div[1]/div/div[2]/div/div/div[2]/div/div/ul/li[6]/div/div/span[2]/button[2]/span[1]", driver, 5);
-			}
-			catch(Exception e) {
-				try { // Attempt to follow
-				Utils.waitUntilClickable("//*[@id=\"page-container\"]/div[1]/div/div[2]/div/div/div[2]/div/div/ul/li[6]/div/div/span[2]/button[1]", driver, 10);
-				driver.findElement(By.xpath("//*[@id=\"page-container\"]/div[1]/div/div[2]/div/div/div[2]/div/div/ul/li[6]/div/div/span[2]/button[1]")).click();
+		int count = 0;
+		while(it.hasNext()) {
+			System.out.println("Yes");
+			if(timer.getElapsedTime() < pauseTime * 1000)
+				continue;
+			System.out.println("Timer");
+			if(count >= maxFollow)
+				break;
+			System.out.println("Count");
+			synchronized(this) {
+				Entry<String, String> pair = (Entry<String, String>) it.next();
+				// If already following this user, skip attempting to follow this user
+				if(!pair.getValue().equals("0"))
+					continue;
+				timer.reset();
+				timer.start();
+				count++;
+				driver.get("https://www.twitter.com/" + pair.getKey());
+				// Click follow
+				int i = 0;
+				A: while(true) {
+					try { // If the account in control isn't following already, attempt to follow
+						String status = driver.findElement(By.xpath("//*[@id=\"page-container\"]/div[1]/div/div[2]/div/div/div[2]/div/div/ul/li[" + i + "]/div/div/span[2]/button[1]/span[1]")).getText();
+						if(status.equals("Follow"))   
+							driver.findElement(By.xpath("//*[@id=\"page-container\"]/div[1]/div/div[2]/div/div/div[2]/div/div/ul/li[" + i + "]/div/div/span[2]/button[1]")).click();
+						targetUsers.put(pair.getKey(), "1");
+						break A;
+					}
+					catch(Exception e) {
+						i++;
+					}
 				}
-				catch(Exception e1) {
-					
-				}
 			}
+			
 		}
+		file.write(targetUsers.toString());
+		file.close();
 		
-
 		// Update cookies
 		BufferedWriter writer = new BufferedWriter(new FileWriter("res/Cookies.txt", false));
 		cookies = driver.manage().getCookies();

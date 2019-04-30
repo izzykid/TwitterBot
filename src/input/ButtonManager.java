@@ -12,74 +12,53 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import apiCalls.GrabFollowers;
-import apiCalls.TestCall;
 import apiCalls.UpdateInfluencers;
+import core.Launcher;
 import interact.FollowUsers;
 import twitter4j.TwitterException;
 
 
 public class ButtonManager {
 
-	public boolean followTargets, updateInfluencers, test;
+	public boolean grabTargets, updateInfluencers, followUsers, test;
 	
 	public ButtonManager() {
-		followTargets = false;
+		grabTargets = false;
 		updateInfluencers = false;
+		followUsers = false;
 		test = false;
 	}
 	
 	public void tick() throws TwitterException, IOException, ParseException, InterruptedException {
-		if(followTargets) {
-			System.out.println("Follow Users");
+		if(grabTargets) {
 			JSONParser parser = new JSONParser();
 			Object obj = parser.parse(new FileReader("res/Influencers.json"));
 			JSONObject targetUsers = (JSONObject) obj;
 			Iterator it = targetUsers.entrySet().iterator();
-			ArrayList<String> IDs = new ArrayList<String>();
+			ArrayList<String> usernames = new ArrayList<String>();
 			while(it.hasNext()) {
 				Entry<String, String> pair = (Entry<String, String>) it.next();
-				IDs.add(pair.getKey());
-				System.out.println(IDs.size() + ": " + IDs);
+				usernames.add(pair.getKey());
 			}
-			followTargets = false;
-			// Grabs 1-3 random influencers to grab followers from
-			double rand = Math.random();
-			int targetAmount;
-			if(rand > 0.666666)
-				targetAmount = 1;
-			else if(rand < 0.333333)
-				targetAmount = 2;
-			else
-				targetAmount = 3;
-			
-			// Select the target amount of influencers and select them at random
-			HashSet<String> targetInfluencers = new HashSet<String>();
-			while(targetInfluencers.size() < targetAmount) {
-				targetInfluencers.add(IDs.get((int) Math.floor(Math.random() * IDs.size())));
-			}
-			// Grab followers from each of the randomly selected influencers
-			for(String ID : targetInfluencers) { 
-				new GrabFollowers(Long.parseLong(ID), 25);
-				
-//				new GrabFollowers(50);
-			}
-//			new GrabFollowers(757074558373343232l, 25); 
+			grabTargets = false;
+			// Grab followers from a random influencer
+			new GrabFollowers(usernames.get((int) Math.floor(Math.random() * usernames.size())),
+					Integer.parseInt(Launcher.getTargetAmount().getText()));
 		}
 		if(updateInfluencers) {
-			System.out.println("Update Influencers");
 			updateInfluencers = false;
-			new UpdateInfluencers();
+			new UpdateInfluencers(Launcher.getInfluencerTracker().getText());
 		}
-		if(test) {
-			System.out.println("Test Call");
-			test = false;
-			ArrayList<String> targets = new ArrayList<String>();
-			targets.add("kyle_foster2");
-			new FollowUsers(targets, "steezymemes", "twitterTesting");
-		}
-//		if(listItem){
-//			eBayApplicationMethods.listItemToEbay();
-//			listItem = false;
+//		if(test) {
+//			System.out.println("Test Call");
+//			followUsers = false;
+//			new FollowUsers("steezymemes", "twitterTesting", 5);
 //		}
+		if(followUsers) {
+			System.out.println("Follow Users");
+			followUsers = false;
+			new FollowUsers(Launcher.getInfluencerTracker().getText(), "twitterTesting",
+					Integer.parseInt(Launcher.getMaxFollow().getText()), Integer.parseInt(Launcher.getPauseTime().getText()));
+		}
 	}
 }
