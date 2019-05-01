@@ -1,6 +1,7 @@
 package apiCalls;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -35,8 +36,33 @@ public abstract class APICall {
 			ConfigurationBuilder cb = new ConfigurationBuilder();
 			cb.setDebugEnabled(true).setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret)
 			.setOAuthAccessToken(accessToken).setOAuthAccessTokenSecret(accessTokenSecret);
+			
 			twitterFactory = new TwitterFactory(cb.build());
 			twitter = twitterFactory.getInstance();
+		}
+	}
+	
+	public Twitter getAuthenticatedTwitterInstance(String username, String password) throws FileNotFoundException {
+		// Grab API Keys from APIKeys.txt
+		if(!new File("res/APIKeys.txt").exists()) {
+			System.out.println("API keys need to be inputted into APIKeys.txt (found in res folder)");
+			return null;
+		}
+		else {
+			Scanner sc = new Scanner(new File("res/APIKeys.txt"));
+			consumerKey = sc.nextLine().split(":")[1];
+			consumerSecret = sc.nextLine().split(":")[1];
+			accessToken = sc.nextLine().split(":")[1];
+			accessTokenSecret = sc.nextLine().split(":")[1];
+			sc.close();
+
+			ConfigurationBuilder cb = new ConfigurationBuilder();
+			cb.setDebugEnabled(true).setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret)
+			.setOAuthAccessToken(accessToken).setOAuthAccessTokenSecret(accessTokenSecret).setUser(username).setPassword(password);
+
+			TwitterFactory twitterFactory = new TwitterFactory(cb.build());
+			Twitter twitter = twitterFactory.getInstance();
+			return twitter;
 		}
 	}
 }
