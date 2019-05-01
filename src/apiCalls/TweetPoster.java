@@ -18,19 +18,19 @@ public class TweetPoster extends APICall{
 		super();
 	}
 	
-	public Status repostBestTweet(String username, String password) throws TwitterException, IOException {
+	public Status repostBestTweet() throws TwitterException, IOException {
 		ArrayList<String> usersToPullFrom = new ArrayList<String>(Arrays.asList(dataPull));
-		return repostBestTweet(usersToPullFrom, username, password);
+		return repostBestTweet(usersToPullFrom);
 	}
 	
-	public Status repostBestTweet(ArrayList<String> usersToPullFrom, String username, String password) throws TwitterException, IOException {
+	public Status repostBestTweet(ArrayList<String> usersToPullFrom) throws TwitterException, IOException {
 		TweetGrabber grabber = new TweetGrabber();
 		Status bestStatus = grabber.grab(usersToPullFrom);
-		return postTweet(bestStatus, username, password);
+		return postTweet(bestStatus);
 	}
 	
-	private Status postTweet(Status tweet, String username, String password) throws TwitterException, FileNotFoundException {
-		Twitter twitter = this.getAuthenticatedTwitterInstance(username, password);
+	private Status postTweet(Status tweet) throws TwitterException, FileNotFoundException {
+		Twitter twitter = this.getAuthenticatedTwitterInstance();
 		
 		MediaEntity[] images = tweet.getMediaEntities();
 		long[] mediaIDs = new long[images.length];
@@ -39,7 +39,7 @@ public class TweetPoster extends APICall{
 			mediaIDs[i] = images[i].getId();
 		}
 		
-		StatusUpdate statusUpdate = new StatusUpdate(tweet.getText());
+		StatusUpdate statusUpdate = new StatusUpdate(tweet.getText() + " ");
 		statusUpdate.setMediaIds(mediaIDs);
 		Status status = twitter.updateStatus(statusUpdate);
 		return status;

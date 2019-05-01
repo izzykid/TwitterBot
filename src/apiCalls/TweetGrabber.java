@@ -55,6 +55,10 @@ public class TweetGrabber extends APICall{
 	 * @return A grade based on the engagement of that tweet
 	 */
 	private int gradeTweet(Status tweet) {
+		if(tweet.getMediaEntities().length < 1) {
+			return 0;
+		}
+		
 		int grade = tweet.getFavoriteCount();
 		grade += tweet.getRetweetCount() * 2;
 		
