@@ -47,7 +47,7 @@ public abstract class APICall {
 		}
 	}
 	
-	public Twitter getAuthenticatedTwitterInstance() {
+	public Twitter getAuthenticatedTwitterInstance(String username, String password) {
 
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		//the following is set without accesstoken- desktop client
