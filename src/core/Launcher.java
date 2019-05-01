@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.GroupLayout;
@@ -13,8 +14,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import apiCalls.APICall;
+import apiCalls.TweetGrabber;
 import apiCalls.TweetPoster;
 import twitter4j.TwitterException;
+import twitter4j.auth.RequestToken;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
@@ -31,9 +35,10 @@ public class Launcher extends JFrame {
 	private static JTextField pauseTime;
 	private static JTextField targetAmount;
 	
-	private JTextField userTxtField;
-	private JPasswordField passwordField;
+	private JTextField pinTxtField;
 	private JButton btnPostTweets;
+	
+	private static TweetPoster tweetPoster = null;
 	
 	/**
 	 * Launch the application.
@@ -51,6 +56,13 @@ public class Launcher extends JFrame {
 				}
 			}
 		});
+		try {
+			tweetPoster = new TweetPoster();
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -93,15 +105,10 @@ public class Launcher extends JFrame {
 		
 		JLabel lblGrabTargetAmount = new JLabel("Grab Target Amount");
 		
-		userTxtField = new JTextField();
-		userTxtField.setColumns(11);
+		pinTxtField = new JTextField();
+		pinTxtField.setColumns(11);
 		
-		passwordField = new JPasswordField();
-		passwordField.setColumns(11);
-		
-		JLabel lblUsername = new JLabel("username");
-		
-		JLabel lblPassword = new JLabel("password");
+		JLabel lblUsername = new JLabel("Access PIN");
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -129,11 +136,7 @@ public class Launcher extends JFrame {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblGrabTargetAmount))
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblPassword))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(userTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(pinTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblUsername)))
 					.addContainerGap())
@@ -152,13 +155,9 @@ public class Launcher extends JFrame {
 						.addComponent(lblBreakTimeIn))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(userTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(pinTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblUsername))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblPassword))
-					.addGap(5)
+					.addGap(31)
 					.addComponent(lblGrabAllFollowing)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(influencerTracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -197,27 +196,32 @@ public class Launcher extends JFrame {
 			}
 		});
 		
-		btnPostTweets = new JButton("Post Tweets");
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnPostTweets, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
-						.addComponent(followUsers, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
-						.addComponent(updateInfluencers, GroupLayout.PREFERRED_SIZE, 155, Short.MAX_VALUE)
-						.addComponent(grabTargetUsers, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE))
-					.addContainerGap())
-		);
+		btnPostTweets = new JButton("(Req: PIN) Post Tweet");
 		btnPostTweets.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String user = userTxtField.getText();
-				String password = new String(passwordField.getPassword());
+				if(tweetPoster.requestToken != null && pinTxtField.getText().trim().length() > 0) {
+					try {
+						tweetPoster.getAuthenticatedSession(pinTxtField.getText().trim());
+						tweetPoster.repostBestTweet();
+					} catch (TwitterException e1) {
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		JButton btnPINBtn = new JButton("Get PIN");
+		btnPINBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				try {
-					TweetPoster poster = new TweetPoster();
-					poster.repostBestTweet();
+					tweetPoster.getRequestToken();
+					Runtime.getRuntime().exec(new String[] {"cmd", "/c", "start chrome " + tweetPoster.requestToken.getAuthorizationURL()});
+					
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
 				} catch (TwitterException e1) {
 					e1.printStackTrace();
 				} catch (IOException e1) {
@@ -225,21 +229,40 @@ public class Launcher extends JFrame {
 				}
 			}
 		});
-		
-		
+		GroupLayout gl_panel = new GroupLayout(panel);
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+								.addComponent(followUsers, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+								.addComponent(updateInfluencers, GroupLayout.PREFERRED_SIZE, 155, Short.MAX_VALUE)
+								.addComponent(grabTargetUsers, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnPINBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+								.addComponent(btnPostTweets, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE))))
+					.addContainerGap())
+		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(followUsers)
-					.addGap(34)
+					.addGap(27)
+					.addComponent(btnPINBtn)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnPostTweets)
-					.addGap(28)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(updateInfluencers)
 					.addPreferredGap(ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
 					.addComponent(grabTargetUsers)
 					.addContainerGap())
 		);
+		
 		panel.setLayout(gl_panel);
 		contentPane.setLayout(gl_contentPane);
 	}
