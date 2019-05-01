@@ -39,6 +39,7 @@ public class Launcher extends JFrame {
 	private JButton btnPostTweets;
 	
 	private static TweetPoster tweetPoster = null;
+	private static boolean authenticated = false;
 	
 	/**
 	 * Launch the application.
@@ -202,7 +203,11 @@ public class Launcher extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(tweetPoster.requestToken != null && pinTxtField.getText().trim().length() > 0) {
 					try {
-						tweetPoster.getAuthenticatedSession(pinTxtField.getText().trim());
+						if(!authenticated) {
+							tweetPoster.getAuthenticatedSession(pinTxtField.getText().trim());
+							authenticated = true;
+						}
+						
 						tweetPoster.repostBestTweet();
 					} catch (TwitterException e1) {
 						e1.printStackTrace();
@@ -217,6 +222,7 @@ public class Launcher extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					authenticated = false;
 					tweetPoster.getRequestToken();
 					Runtime.getRuntime().exec(new String[] {"cmd", "/c", "start chrome " + tweetPoster.requestToken.getAuthorizationURL()});
 					

@@ -1,6 +1,7 @@
 package apiCalls;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class TweetGrabber extends APICall{
 			throw new IOException();
 		}
 		
+		ArrayList<Status> tweets = new ArrayList<Status>();
 		int maxGrade = 0;
 		Status bestTweet = null;
 		//Iterates though each user and gets the 100 most recent posts from each user
@@ -41,13 +43,14 @@ public class TweetGrabber extends APICall{
 				int grade = gradeTweet(tweet);
 				//Stores the better result between the current best and current tweet
 				if(grade >= maxGrade) {
+					tweets.add(tweet);
 					maxGrade = grade;
 					bestTweet = tweet;
 				}
 			}
 		}
 		
-		return bestTweet;
+		return tweets.get((int)(Math.random() * tweets.size()));
 	}
 	
 	/**
