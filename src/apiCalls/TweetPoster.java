@@ -38,17 +38,14 @@ public class TweetPoster extends APICall{
 	}
 	
 	private Status postTweet(Status tweet) throws TwitterException, FileNotFoundException {
-		//Twitter twitter = this.getAuthenticatedTwitterInstance(username, password);
-		
 		MediaEntity[] images = tweet.getMediaEntities();
-		long[] mediaIDs = new long[images.length];
 		
+		String post = tweet.getText();
 		for(int i = 0; i < images.length; i++) {
-			mediaIDs[i] = images[i].getId();
+			post += images[i].getMediaURL() + " ";
 		}
-		
-		StatusUpdate statusUpdate = new StatusUpdate(tweet.getText() + " ");
-		statusUpdate.setMediaIds(mediaIDs);
+		StatusUpdate statusUpdate = new StatusUpdate(tweet.getText());
+		//statusUpdate.setMediaIds(mediaIDs);
 		Status status = twitter.updateStatus(statusUpdate);
 		return status;
 	}
