@@ -4,28 +4,19 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import org.json.simple.parser.ParseException;
-
-import apiCalls.APICall;
-import apiCalls.TweetGrabber;
-import apiCalls.TweetPoster;
-import twitter4j.TwitterException;
-import twitter4j.auth.RequestToken;
-
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JTextField;
 import javax.swing.JLabel;
-import javax.swing.JPasswordField;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
 public class Launcher extends JFrame {
@@ -36,12 +27,9 @@ public class Launcher extends JFrame {
 	private static JTextField maxFollow;
 	private static JTextField pauseTime;
 	private static JTextField targetAmount;
-	
-	private JTextField pinTxtField;
+	private static JTextField numOfInfluencers;
+	private static JTextField numOfTweets;
 	private JButton btnPostTweets;
-	
-	private static TweetPoster tweetPoster = null;
-//	private static boolean authenticated = false;
 	
 	/**
 	 * Launch the application.
@@ -63,10 +51,14 @@ public class Launcher extends JFrame {
 	
 	/**
 	 * Create the frame.
+	 * @throws IOException 
 	 */
-	public Launcher() {
+	public Launcher() throws IOException {
+		setTitle("Twitter Manager");
+		File imgPath = new File("res/TwitterManagerIcon.png");
+		setIconImage(ImageIO.read(imgPath));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 484, 343);
 		contentPane = new JPanel();
 		contentPane.setForeground(new Color(102, 204, 204));
 		contentPane.setBackground(new Color(102, 204, 204));
@@ -101,10 +93,15 @@ public class Launcher extends JFrame {
 		
 		JLabel lblGrabTargetAmount = new JLabel("Grab Target Amount");
 		
-		pinTxtField = new JTextField();
-		pinTxtField.setColumns(11);
+		numOfInfluencers = new JTextField();
+		numOfInfluencers.setColumns(10);
 		
-		JLabel lblUsername = new JLabel("Access PIN");
+		numOfTweets = new JTextField();
+		numOfTweets.setColumns(10);
+		
+		JLabel lblOfInfluencers = new JLabel("# of influencers");
+		
+		JLabel lblOfTweets = new JLabel("# of tweets/ influencer");
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -116,30 +113,35 @@ public class Launcher extends JFrame {
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
 								.addComponent(pauseTime, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
 								.addComponent(maxFollow, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-								.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-									.addComponent(lblBreakTimeIn)
-									.addComponent(lblFollowAmount))
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(lblseconds)
-									.addGap(35))))
-						.addComponent(influencerTracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblGrabAllFollowing)
-						.addComponent(lblGrabFollowersFrom)
+									.addGap(33)
+									.addComponent(lblseconds))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblBreakTimeIn)
+										.addComponent(lblFollowAmount)))))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblGrabTargetAmount))
+						.addComponent(lblGrabFollowersFrom)
+						.addComponent(influencerTracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblGrabAllFollowing)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(pinTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(numOfInfluencers, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblUsername)))
-					.addContainerGap())
+							.addComponent(lblOfInfluencers))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(numOfTweets, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblOfTweets)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
+				.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
@@ -149,25 +151,29 @@ public class Launcher extends JFrame {
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(pauseTime, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblBreakTimeIn))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(26)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(pinTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblUsername))
-					.addGap(31)
+						.addComponent(numOfInfluencers, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblOfInfluencers))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(numOfTweets, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblOfTweets))
+					.addGap(37)
 					.addComponent(lblGrabAllFollowing)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(influencerTracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(41)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblGrabFollowersFrom)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblGrabTargetAmount))
-					.addGap(11))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(55)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+					.addGap(61)
 					.addComponent(lblseconds)
-					.addContainerGap(182, Short.MAX_VALUE))
+					.addContainerGap(211, Short.MAX_VALUE))
 		);
 		
 		JButton grabTargetUsers = new JButton("Grab Targets");
@@ -192,65 +198,43 @@ public class Launcher extends JFrame {
 			}
 		});
 		
-		btnPostTweets = new JButton("(Req: PIN) Post Tweet");
+		btnPostTweets = new JButton("Post Tweet");
 		btnPostTweets.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(tweetPoster.requestToken != null && pinTxtField.getText().trim().length() > 0) {
-					try {
-						
-						try {
-							tweetPoster.repostBestTweet();
-						} catch (ParseException e1) {
-							e1.printStackTrace();
-						}
-					} catch (TwitterException e1) {
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-		});
-		JButton btnPINBtn = new JButton("Get PIN");
-		btnPINBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				app.getButtonManager().getPin = true;
+				
 			}
 		});
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_panel.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(followUsers, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
-								.addComponent(updateInfluencers, GroupLayout.PREFERRED_SIZE, 155, Short.MAX_VALUE)
-								.addComponent(grabTargetUsers, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnPINBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
-								.addComponent(btnPostTweets, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE))))
-					.addContainerGap())
+							.addComponent(grabTargetUsers, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+							.addContainerGap())
+						.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(followUsers, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+								.addComponent(btnPostTweets, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE))
+							.addContainerGap())
+						.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+							.addComponent(updateInfluencers, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+							.addContainerGap())))
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(followUsers)
-					.addGap(27)
-					.addComponent(btnPINBtn)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGap(59)
 					.addComponent(btnPostTweets)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGap(76)
 					.addComponent(updateInfluencers)
-					.addPreferredGap(ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+					.addGap(18)
 					.addComponent(grabTargetUsers)
-					.addContainerGap())
+					.addContainerGap(22, Short.MAX_VALUE))
 		);
 		
 		panel.setLayout(gl_panel);
@@ -277,19 +261,11 @@ public class Launcher extends JFrame {
 		return targetAmount;
 	}
 
-	public static TweetPoster getTweetPoster() {
-		return tweetPoster;
+	public static JTextField getNumOfInfluencers() {
+		return numOfInfluencers;
 	}
 
-//	public static boolean isAuthenticated() {
-//		return authenticated;
-//	}
-//
-//	public static void setAuthenticated(boolean authenticated) {
-//		Launcher.authenticated = authenticated;
-//	}
-
-	public static void setTweetPoster(TweetPoster tweetPoster) {
-		Launcher.tweetPoster = tweetPoster;
+	public static JTextField getNumOfTweets() {
+		return numOfTweets;
 	}
 }

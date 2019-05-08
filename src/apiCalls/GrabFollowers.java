@@ -1,12 +1,8 @@
 package apiCalls;
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Scanner;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -32,8 +28,15 @@ public class GrabFollowers extends APICall {
 	public GrabFollowers(String influencer, int grabAmount) throws TwitterException, IOException, ParseException {
 		System.out.println("Grab " + influencer + "'s followers");
 		JSONParser parser = new JSONParser();
-		Object obj = parser.parse(new FileReader("res/TargetedUsers.json"));
-		JSONObject targetUsers = (JSONObject) obj;
+		JSONObject targetUsers;
+		try {
+			Object obj = parser.parse(new FileReader("res/TargetedUsers.json"));
+			targetUsers = (JSONObject) obj;
+		}
+		catch(Exception e) {
+			targetUsers = new JSONObject();
+		}
+		
 		FileWriter file = new FileWriter("res/TargetedUsers.json");
 		int indexOffset = 0;
 		

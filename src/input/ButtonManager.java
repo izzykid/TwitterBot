@@ -3,7 +3,6 @@ package input;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -12,19 +11,19 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import apiCalls.GrabFollowers;
+import apiCalls.TweetReposter;
 import apiCalls.UpdateInfluencers;
 import core.Launcher;
 import interact.FollowUsers;
 import twitter4j.TwitterException;
-import twitter4j.auth.RequestToken;
 
 
 public class ButtonManager {
 
-	public boolean grabTargets, updateInfluencers, followUsers, getPin;
+	public boolean grabTargets, updateInfluencers, followUsers, postTweet;
 	
 	public ButtonManager() {
-		getPin = false;
+		postTweet = false;
 		grabTargets = false;
 		updateInfluencers = false;
 		followUsers = false;
@@ -35,9 +34,10 @@ public class ButtonManager {
 			JSONParser parser = new JSONParser();
 			Object obj = parser.parse(new FileReader("res/Influencers.json"));
 			JSONObject targetUsers = (JSONObject) obj;
-			Iterator it = targetUsers.entrySet().iterator();
+			Iterator<?> it = targetUsers.entrySet().iterator();
 			ArrayList<String> usernames = new ArrayList<String>();
 			while(it.hasNext()) {
+				@SuppressWarnings("unchecked")
 				Entry<String, String> pair = (Entry<String, String>) it.next();
 				usernames.add(pair.getKey());
 			}
@@ -55,16 +55,9 @@ public class ButtonManager {
 			followUsers = false;
 			new FollowUsers(Integer.parseInt(Launcher.getMaxFollow().getText()), Integer.parseInt(Launcher.getPauseTime().getText()));
 		}
-		if(getPin) {
-//			try {
-////				Launcher.setAuthenticated(false);
-////				Launcher.getTweetPoster().getRequestToken();
-////				Runtime.getRuntime().exec(new String[] {"cmd", "/c", "start chrome " + Launcher.getTweetPoster().requestToken.getAuthorizationURL()});
-//				
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-			getPin = false;
+		if(postTweet) {
+			new TweetReposter(Integer.parseInt(Launcher.getNumOfTweets().getText()), Integer.parseInt(Launcher.getNumOfInfluencers().getText()));
+			postTweet = false;
 		}
 	}
 }

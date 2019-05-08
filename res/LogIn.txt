@@ -1,3 +1,5 @@
-username:danksauz
-password:cantThink98
-auth:true
+username:steezymemes
+password:twitterTesting
+*********Ignore Below***********
+danksauz
+cantThink98
