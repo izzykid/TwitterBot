@@ -32,12 +32,14 @@ public class TweetReposter extends APICall {
 	 */
 	public TweetReposter(int numOfInfluencers, int numOfTweets) throws TwitterException, IOException, ParseException {
 		// Sets number of tweets per influencer and grabs "numOfInfluencers" influencers
-		Paging paging = new Paging(1, numOfTweets);
 		ArrayList<String> targetedInfluencers = chooseRandomInfluencers(numOfInfluencers);
 		ArrayList<Status> bestTweets = grab(targetedInfluencers, numOfTweets);
-		Status chosenTweet = bestTweets.get((int)(Math.random() * bestTweets.size()));
-		while(!postTweet(chosenTweet)) {
-			chosenTweet = bestTweets.get((int)(Math.random() * bestTweets.size()));
+		if(bestTweets.size() < 1) {
+			throw new IOException("No tweets grabbed!!");
+		}
+		Status chosenTweet = bestTweets.get(bestTweets.size() - 1);
+		for(int i = bestTweets.size() - 2; i >= 0 && !postTweet(chosenTweet); i--) {
+			chosenTweet = bestTweets.get(i);
 		}
 	}
 	/**
