@@ -49,54 +49,52 @@ public class FollowUsers extends SeleniumCall {
 		
 		// Configure cookies if Cookies.txt has already been generated
 		Set<Cookie> cookies = driver.manage().getCookies();
-		if(new File("res/Cookies.txt").exists()) {
-			Scanner sc = new Scanner(new File("res/Cookies.txt"));
-			if(sc.hasNextLine()){
-				while(sc.hasNextLine()) {
-					String rawCookieData = sc.nextLine();
-					String[] cookieData = rawCookieData.split(";");
-					String[] date = cookieData[4].split(" ");
-					if(!date[0].equals("null")) {
-						String[] time = date[3].split(":");
-						HashMap<String, Integer> monthMap = new HashMap<String, Integer>();
-						monthMap.put("Jan", 0);
-						monthMap.put("Feb", 1);
-						monthMap.put("Mar", 2);
-						monthMap.put("Apr", 3);
-						monthMap.put("May", 4);
-						monthMap.put("Jun", 5);
-						monthMap.put("Jul", 6);
-						monthMap.put("Aug", 7);
-						monthMap.put("Sep", 8);
-						monthMap.put("Oct", 9);
-						monthMap.put("Nov", 10);
-						monthMap.put("Dec", 11);
-						@SuppressWarnings("deprecation")
-						Date expiry = new Date(Integer.parseInt(date[5]), monthMap.get(date[1]), Integer.parseInt(date[2]),
-								Integer.parseInt(time[0]), Integer.parseInt(time[1]), Integer.parseInt(time[2]));
-						Cookie cookie = new Cookie(cookieData[0], cookieData[1], cookieData[2], cookieData[3], expiry, Boolean.parseBoolean(cookieData[5]));
-						cookies.add(cookie);
-					}
-					else {
-						Cookie cookie = new Cookie(cookieData[0], cookieData[1], cookieData[2], cookieData[3], null, Boolean.parseBoolean(cookieData[5]));
-						cookies.add(cookie);
-					}
+		Scanner sc = new Scanner(new File("res/Cookies.txt"));
+		if(sc.hasNext()){
+			while(sc.hasNextLine()) {
+				String rawCookieData = sc.nextLine();
+				String[] cookieData = rawCookieData.split(";");
+				String[] date = cookieData[4].split(" ");
+				if(!date[0].equals("null")) {
+					String[] time = date[3].split(":");
+					HashMap<String, Integer> monthMap = new HashMap<String, Integer>();
+					monthMap.put("Jan", 0);
+					monthMap.put("Feb", 1);
+					monthMap.put("Mar", 2);
+					monthMap.put("Apr", 3);
+					monthMap.put("May", 4);
+					monthMap.put("Jun", 5);
+					monthMap.put("Jul", 6);
+					monthMap.put("Aug", 7);
+					monthMap.put("Sep", 8);
+					monthMap.put("Oct", 9);
+					monthMap.put("Nov", 10);
+					monthMap.put("Dec", 11);
+					@SuppressWarnings("deprecation")
+					Date expiry = new Date(Integer.parseInt(date[5]), monthMap.get(date[1]), Integer.parseInt(date[2]),
+							Integer.parseInt(time[0]), Integer.parseInt(time[1]), Integer.parseInt(time[2]));
+					Cookie cookie = new Cookie(cookieData[0], cookieData[1], cookieData[2], cookieData[3], expiry, Boolean.parseBoolean(cookieData[5]));
+					cookies.add(cookie);
 				}
-				sc.close();
-				// Open twitter to load cookies
-				driver.get("https://www.twitter.com/" + Utils.getLogInInfo()[0]);
-				// Add all cookie objects to the WebDriver object
-				for(Cookie cookie : cookies) {
-					try {
-						driver.manage().addCookie(cookie);
-					}
-					catch(Exception e) {
-						e.printStackTrace();
-					}
+				else {
+					Cookie cookie = new Cookie(cookieData[0], cookieData[1], cookieData[2], cookieData[3], null, Boolean.parseBoolean(cookieData[5]));
+					cookies.add(cookie);
 				}
-				// Refresh the browser to load the cookies
-				driver.navigate().refresh();
 			}
+			sc.close();
+			// Open twitter to load cookies
+			driver.get("https://www.twitter.com/" + Utils.getLogInInfo()[0]);
+			// Add all cookie objects to the WebDriver object
+			for(Cookie cookie : cookies) {
+				try {
+					driver.manage().addCookie(cookie);
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+			// Refresh the browser to load the cookies
+			driver.navigate().refresh();
 		}
 		else {
 			// Log in
@@ -111,13 +109,11 @@ public class FollowUsers extends SeleniumCall {
 		
 		int count = 0;
 		while(it.hasNext()) {
-//			System.out.println("Yes");
-			if(timer.getElapsedTime() < pauseTime * 1000)
+			// Waits pauseTime in between follows plus 0-5 seconds to make automated follows more difficult to detect
+			if(timer.getElapsedTime() < pauseTime * 1000 + Math.random() * 5000)
 				continue;
-//			System.out.println("Timer");
 			if(count >= maxFollow)
 				break;
-//			System.out.println("Count");
 			synchronized(this) {
 				Entry<String, String> pair = (Entry<String, String>) it.next();
 				// If already following this user, skip attempting to follow this user
