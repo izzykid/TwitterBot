@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import core.Launcher;
 import twitter4j.MediaEntity;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -37,9 +38,23 @@ public class TweetReposter extends APICall {
 		if(bestTweets.size() < 1) {
 			throw new IOException("No tweets grabbed!!");
 		}
+		boolean posted = false;
 		Status chosenTweet = bestTweets.get(bestTweets.size() - 1);
-		for(int i = bestTweets.size() - 2; i >= 0 && !postTweet(chosenTweet); i--) {
-			chosenTweet = bestTweets.get(i);
+		posted = postTweet(chosenTweet);
+		if(!posted) {
+			for(int i = bestTweets.size() - 2; i >= 0; i--) {
+				chosenTweet = bestTweets.get(i);
+				posted = postTweet(chosenTweet);
+				if(posted) {
+					break;
+				}
+			}
+			if(!posted) {
+				throw new IOException("Post failed");
+			}
+		}
+		else {
+			Launcher.lblWarning.setText("Posted");
 		}
 	}
 	/**

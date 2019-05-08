@@ -19,6 +19,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JPasswordField;
 import java.awt.Font;
+import javax.swing.JTable;
 
 @SuppressWarnings("serial")
 public class Launcher extends JFrame {
@@ -117,7 +118,7 @@ public class Launcher extends JFrame {
 		
 		JLabel lblPassword = new JLabel("Password");
 		
-		lblWarning = new JLabel("Warning");
+		lblWarning = new JLabel("");
 		lblWarning.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblWarning.setForeground(Color.RED);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -242,8 +243,8 @@ public class Launcher extends JFrame {
 		JButton btnLogin = new JButton("Login");
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
 						.addComponent(btnLogin, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
@@ -266,7 +267,7 @@ public class Launcher extends JFrame {
 					.addComponent(grabTargetUsers)
 					.addGap(27)
 					.addComponent(btnLogin)
-					.addContainerGap(48, Short.MAX_VALUE))
+					.addContainerGap(63, Short.MAX_VALUE))
 		);
 		
 		panel.setLayout(gl_panel);
