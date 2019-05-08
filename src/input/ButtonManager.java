@@ -43,9 +43,17 @@ public class ButtonManager {
 				usernames.add(pair.getKey());
 			}
 			grabTargets = false;
-			// Grab followers from a random influencer
-			new GrabFollowers(usernames.get((int) Math.floor(Math.random() * usernames.size())),
-					Integer.parseInt(Launcher.getTargetAmount().getText()));
+			try {
+				int targetAmount = Integer.parseInt(Launcher.getTargetAmount().getText());
+				if(targetAmount < 1) {
+					throw new Exception();
+				}
+				new GrabFollowers(usernames.get((int) Math.floor(Math.random() * usernames.size())),
+						targetAmount);
+			}
+			catch(Exception e) {
+				Launcher.lblWarning.setText("Max Followers and Pause time should be valid integers above 0");
+			}
 		}
 		if(updateInfluencers) {
 			updateInfluencers = false;
@@ -54,11 +62,31 @@ public class ButtonManager {
 		if(followUsers) {
 			System.out.println("Follow Users");
 			followUsers = false;
-			new FollowUsers(Integer.parseInt(Launcher.getMaxFollow().getText()), Integer.parseInt(Launcher.getPauseTime().getText()));
+			try {
+				int maxFollow = Integer.parseInt(Launcher.getMaxFollow().getText());
+				int pauseTime = Integer.parseInt(Launcher.getPauseTime().getText());
+				if(maxFollow < 1 || pauseTime < 1) {
+					throw new Exception();
+				}
+				new FollowUsers(maxFollow, pauseTime);
+			}
+			catch(Exception e) {
+				Launcher.lblWarning.setText("Max Followers and Pause time should be valid integers above 0");
+			}
 		}
 		if(postTweet) {
-			new TweetReposter(Integer.parseInt(Launcher.getNumOfInfluencers().getText()), Integer.parseInt(Launcher.getNumOfTweets().getText()));
 			postTweet = false;
+			try {
+				int numOfInfluencers = Integer.parseInt(Launcher.getNumOfInfluencers().getText());
+				int numOfTweets = Integer.parseInt(Launcher.getNumOfTweets().getText());
+				if(numOfInfluencers < 1 || numOfTweets < 1) {
+					throw new Exception();
+				}
+				new TweetReposter(numOfInfluencers, numOfTweets);
+			}
+			catch(Exception e) {
+				Launcher.lblWarning.setText("# of Influencers & tweets should be valid integers above 0");
+			}
 		}
 		if(login) {
 			String username = Launcher.userTxtField.getText();
