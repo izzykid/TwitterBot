@@ -236,7 +236,7 @@ public class Launcher extends JFrame {
 		btnPostTweets.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				app.getButtonManager().postTweet = true;
 			}
 		});
 		
