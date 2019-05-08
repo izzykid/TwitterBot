@@ -20,13 +20,14 @@ import twitter4j.TwitterException;
 
 public class ButtonManager {
 
-	public boolean grabTargets, updateInfluencers, followUsers, postTweet;
+	public boolean grabTargets, updateInfluencers, followUsers, postTweet, login;
 	
 	public ButtonManager() {
 		postTweet = false;
 		grabTargets = false;
 		updateInfluencers = false;
 		followUsers = false;
+		login = false;
 	}
 	
 	public void tick() throws TwitterException, IOException, ParseException, InterruptedException {
@@ -58,6 +59,13 @@ public class ButtonManager {
 		if(postTweet) {
 			new TweetReposter(Integer.parseInt(Launcher.getNumOfInfluencers().getText()), Integer.parseInt(Launcher.getNumOfTweets().getText()));
 			postTweet = false;
+		}
+		if(login) {
+			String username = Launcher.userTxtField.getText();
+			String password = new String(Launcher.passwordTxtField.getPassword());
+			Launcher.userTxtField.setText("");
+			Launcher.passwordTxtField.setText("");
+			Launcher.lblWarning.setText("Invalid Login!!!!!!!");
 		}
 	}
 }

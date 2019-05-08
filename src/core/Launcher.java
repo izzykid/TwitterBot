@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JPasswordField;
+import java.awt.Font;
 
 @SuppressWarnings("serial")
 public class Launcher extends JFrame {
@@ -30,6 +32,9 @@ public class Launcher extends JFrame {
 	private static JTextField numOfInfluencers;
 	private static JTextField numOfTweets;
 	private JButton btnPostTweets;
+	public static JTextField userTxtField;
+	public static JPasswordField passwordTxtField;
+	public static JLabel lblWarning;
 	
 	/**
 	 * Launch the application.
@@ -58,7 +63,7 @@ public class Launcher extends JFrame {
 		File imgPath = new File("res/TwitterManagerIcon.png");
 		setIconImage(ImageIO.read(imgPath));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 477, 343);
+		setBounds(100, 100, 477, 403);
 		contentPane = new JPanel();
 		contentPane.setForeground(new Color(102, 204, 204));
 		contentPane.setBackground(new Color(102, 204, 204));
@@ -102,6 +107,20 @@ public class Launcher extends JFrame {
 		JLabel lblOfInfluencers = new JLabel("# of influencers");
 		
 		JLabel lblOfTweets = new JLabel("# of tweets/ influencer");
+		
+		userTxtField = new JTextField();
+		userTxtField.setColumns(11);
+		
+		passwordTxtField = new JPasswordField();
+		passwordTxtField.setColumns(11);
+		
+		JLabel lblUsername = new JLabel("Username");
+		
+		JLabel lblPassword = new JLabel("Password");
+		
+		lblWarning = new JLabel("Warning");
+		lblWarning.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblWarning.setForeground(Color.RED);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -132,12 +151,21 @@ public class Launcher extends JFrame {
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(numOfTweets, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblOfTweets)))
-					.addContainerGap(68, Short.MAX_VALUE))
+							.addComponent(lblOfTweets))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(userTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblUsername))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(passwordTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblPassword))
+						.addComponent(lblWarning))
+					.addContainerGap(35, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(panel, GroupLayout.PREFERRED_SIZE, 294, Short.MAX_VALUE)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
@@ -165,11 +193,21 @@ public class Launcher extends JFrame {
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblGrabTargetAmount))
+					.addGap(31)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(userTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblUsername))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(passwordTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblPassword))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblWarning)
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap(61, Short.MAX_VALUE)
+					.addGap(69)
 					.addComponent(lblseconds)
-					.addGap(211))
+					.addContainerGap(211, Short.MAX_VALUE))
 		);
 		
 		JButton grabTargetUsers = new JButton("Grab Targets");
@@ -201,23 +239,20 @@ public class Launcher extends JFrame {
 				
 			}
 		});
+		
+		JButton btnLogin = new JButton("Login");
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
+				.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addComponent(grabTargetUsers, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
-							.addContainerGap())
-						.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
-							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(followUsers, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
-								.addComponent(btnPostTweets, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE))
-							.addContainerGap())
-						.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
-							.addComponent(updateInfluencers, GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
-							.addContainerGap())))
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+						.addComponent(btnLogin, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+						.addComponent(grabTargetUsers, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+						.addComponent(followUsers, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+						.addComponent(btnPostTweets, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+						.addComponent(updateInfluencers, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -230,7 +265,9 @@ public class Launcher extends JFrame {
 					.addComponent(updateInfluencers)
 					.addGap(18)
 					.addComponent(grabTargetUsers)
-					.addContainerGap(22, Short.MAX_VALUE))
+					.addGap(27)
+					.addComponent(btnLogin)
+					.addContainerGap(48, Short.MAX_VALUE))
 		);
 		
 		panel.setLayout(gl_panel);
