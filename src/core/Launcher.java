@@ -22,7 +22,6 @@ import java.awt.Font;
 
 @SuppressWarnings("serial")
 public class Launcher extends JFrame {
-
 	private JPanel contentPane;
 	private static TwitterApp app;
 	private static JTextField influencerTracker;

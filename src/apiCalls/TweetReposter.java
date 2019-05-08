@@ -4,16 +4,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import twitter4j.MediaEntity;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
 
 public class TweetReposter extends APICall {
@@ -30,13 +34,12 @@ public class TweetReposter extends APICall {
 		// Sets number of tweets per influencer and grabs "numOfInfluencers" influencers
 		Paging paging = new Paging(1, numOfTweets);
 		ArrayList<String> targetedInfluencers = chooseRandomInfluencers(numOfInfluencers);
-		
-		// TODO: Get best performing tweet based off
-		for(String influencer : targetedInfluencers) {
-			ResponseList<Status> results = twitter.getUserTimeline(influencer, paging);
+		ArrayList<Status> bestTweets = grab(targetedInfluencers, numOfTweets);
+		Status chosenTweet = bestTweets.get((int)(Math.random() * bestTweets.size()));
+		while(!postTweet(chosenTweet)) {
+			chosenTweet = bestTweets.get((int)(Math.random() * bestTweets.size()));
 		}
 	}
-	
 	/**
 	 * Grabs a list of influencers at random, based on how many influencers the user wants
 	 * to be selected
@@ -73,5 +76,79 @@ public class TweetReposter extends APICall {
 			allInfluencers.remove(randIndex);
 		}
 		return targetedInfluencers;
+	}
+	/**
+	 * Pulls the most recent 100 tweets from each person's timeline and grades them all against eachother for most engagement.
+	 * @param usersToPullFrom
+	 * @return The tweet with the most engagement
+	 * @throws TwitterException
+	 * @throws IOException
+	 */
+	public ArrayList<Status> grab(List<String> usersToPullFrom, int numOfTweets) throws TwitterException, IOException {
+		if(usersToPullFrom.size() < 1) {
+			throw new IOException();
+		}
+		ArrayList<Status> tweets = new ArrayList<Status>();
+		int maxGrade = 0;
+		Status bestTweet = null;
+		//Iterates though each user and gets the 100 most recent posts from each user
+		Paging paging = new Paging(1, numOfTweets);
+		for(String user: usersToPullFrom) {
+			ResponseList<Status> results = twitter.getUserTimeline(user, paging);
+			//Grades the results
+			for(Status tweet: results) {
+				int grade = gradeTweet(tweet);
+				//Stores the better result between the current best and current tweet
+				if(grade >= maxGrade) {
+					tweets.add(tweet);
+					maxGrade = grade;
+					bestTweet = tweet;
+				}
+			}
+		}
+		return tweets;
+	}
+	/**
+	 * @param tweet
+	 * @return A grade based on the engagement of that tweet
+	 */
+	private int gradeTweet(Status tweet) {
+		if(tweet.getMediaEntities().length < 1) {
+			return 0;
+		}
+		
+		int grade = tweet.getFavoriteCount();
+		grade += tweet.getRetweetCount() * 2;
+		
+		//Adding an element of oldness to help prevent us being caught for reposting
+		//Each day since today adds a point to the grade
+		Date date = new Date();
+		grade += (int)((date.getTime() - tweet.getCreatedAt().getTime()) / (long)(86400000));
+		
+		return grade;
+	}
+	/**
+	 * Returns whether or not twitterbot was able to post the tweet
+	 * @param tweet
+	 * @return
+	 * @throws TwitterException
+	 * @throws FileNotFoundException
+	 */
+	private boolean postTweet(Status tweet){
+		MediaEntity[] images = tweet.getMediaEntities();
+		
+		String post = tweet.getText();
+		for(int i = 0; i < images.length; i++) {
+			post += images[i].getMediaURL() + " ";
+		}
+		
+		StatusUpdate statusUpdate = new StatusUpdate(tweet.getText());
+		//statusUpdate.setMediaIds(mediaIDs);
+		try {
+			Status status = twitter.updateStatus(statusUpdate);
+			return true;
+		} catch (TwitterException e) {
+			return false;
+		}
 	}
 }
