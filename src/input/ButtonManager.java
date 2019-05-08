@@ -56,7 +56,7 @@ public class ButtonManager {
 			new FollowUsers(Integer.parseInt(Launcher.getMaxFollow().getText()), Integer.parseInt(Launcher.getPauseTime().getText()));
 		}
 		if(postTweet) {
-			new TweetReposter(Integer.parseInt(Launcher.getNumOfTweets().getText()), Integer.parseInt(Launcher.getNumOfInfluencers().getText()));
+			new TweetReposter(Integer.parseInt(Launcher.getNumOfInfluencers().getText()), Integer.parseInt(Launcher.getNumOfTweets().getText()));
 			postTweet = false;
 		}
 	}

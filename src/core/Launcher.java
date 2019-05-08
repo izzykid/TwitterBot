@@ -58,7 +58,7 @@ public class Launcher extends JFrame {
 		File imgPath = new File("res/TwitterManagerIcon.png");
 		setIconImage(ImageIO.read(imgPath));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 484, 343);
+		setBounds(100, 100, 477, 343);
 		contentPane = new JPanel();
 		contentPane.setForeground(new Color(102, 204, 204));
 		contentPane.setBackground(new Color(102, 204, 204));
@@ -86,7 +86,7 @@ public class Launcher extends JFrame {
 		
 		JLabel lblBreakTimeIn = new JLabel("Break Time In Between");
 		
-		JLabel lblseconds = new JLabel("(seconds)");
+		JLabel lblseconds = new JLabel("in seconds (+ 0-5 seconds)");
 		
 		targetAmount = new JTextField();
 		targetAmount.setColumns(10);
@@ -113,15 +113,11 @@ public class Launcher extends JFrame {
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
 								.addComponent(pauseTime, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
 								.addComponent(maxFollow, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addGap(33)
-									.addComponent(lblseconds))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-										.addComponent(lblBreakTimeIn)
-										.addComponent(lblFollowAmount)))))
+								.addComponent(lblseconds)
+								.addComponent(lblBreakTimeIn)
+								.addComponent(lblFollowAmount)))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -137,10 +133,10 @@ public class Launcher extends JFrame {
 							.addComponent(numOfTweets, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblOfTweets)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap(68, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
@@ -170,10 +166,10 @@ public class Launcher extends JFrame {
 						.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblGrabTargetAmount))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-					.addGap(61)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap(61, Short.MAX_VALUE)
 					.addComponent(lblseconds)
-					.addContainerGap(211, Short.MAX_VALUE))
+					.addGap(211))
 		);
 		
 		JButton grabTargetUsers = new JButton("Grab Targets");

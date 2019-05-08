@@ -54,6 +54,11 @@ public class TwitterApp implements Runnable{
 			file.write(obj.toString());
 			file.close();
 		}
+		if(!new File("res/Cookies.txt").exists()) {
+			FileWriter file = new FileWriter("res/Cookies.txt");
+			file.write("");
+			file.close();
+		}
 	}
 	
 	public ButtonManager getButtonManager(){
@@ -90,8 +95,8 @@ public class TwitterApp implements Runnable{
 			e1.printStackTrace();
 		}
 		
-		int fps = 60;
-		double timePerTick = 1000000000 / fps;
+		int tps = 5;
+		double timePerTick = 1000000000 / tps;
 		double delta = 0;
 		long now;
 		long lastTime = System.nanoTime();

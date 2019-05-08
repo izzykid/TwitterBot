@@ -18,11 +18,20 @@ import twitter4j.TwitterException;
 
 public class TweetReposter extends APICall {
 
+	/**
+	 * 
+	 * @param numOfInfluencers - number of influencers the user wants to search for tweets from
+	 * @param numOfTweets
+	 * @throws TwitterException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	public TweetReposter(int numOfInfluencers, int numOfTweets) throws TwitterException, IOException, ParseException {
 		// Sets number of tweets per influencer and grabs "numOfInfluencers" influencers
 		Paging paging = new Paging(1, numOfTweets);
 		ArrayList<String> targetedInfluencers = chooseRandomInfluencers(numOfInfluencers);
 		
+		// TODO: Get best performing tweet based off
 		for(String influencer : targetedInfluencers) {
 			ResponseList<Status> results = twitter.getUserTimeline(influencer, paging);
 		}
@@ -64,9 +73,5 @@ public class TweetReposter extends APICall {
 			allInfluencers.remove(randIndex);
 		}
 		return targetedInfluencers;
-	}
-
-	private static Status getBestPerformingTweet() {
-		return null;
 	}
 }

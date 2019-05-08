@@ -1,16 +1,16 @@
-twid;"u=1115740636051677184";.twitter.com;/;Sun May 05 18:33:24 PDT 9624;true
-personalization_id;"v1_E//wPPBwtVCL4drfCT6I5A==";.twitter.com;/;Thu May 06 18:33:23 PDT 9621;true
-dnt;1;.twitter.com;/;Sun May 05 19:27:21 PDT 2024;false
-ads_prefs;"HBISAAA=";.twitter.com;/;Sun May 05 18:33:24 PDT 9624;true
-_gid;GA1.2.1065891583.1557282305;.twitter.com;/;Wed May 08 19:27:19 PDT 2019;false
-guest_id;v1%3A155727919883347280;.twitter.com;/;Thu May 06 18:33:23 PDT 9621;true
-_gat;1;.twitter.com;/;Tue May 07 18:34:24 PDT 9619;true
-_ga;GA1.2.1878511101.1557279204;.twitter.com;/;Thu May 06 19:27:19 PDT 2021;false
-csrf_same_site;1;.twitter.com;/;Wed May 06 18:33:24 PDT 9620;true
-_twitter_sess;BAh7CSIKZmxhc2hJQzonQWN0aW9uQ29udHJvbGxlcjo6Rmxhc2g6OkZsYXNo%250ASGFzaHsABjoKQHVzZWR7ADoPY3JlYXRlZF9hdGwrCKoeQpVqAToMY3NyZl9p%250AZCIlYzI1MjJkYjlkODEyZWZlMjhkNDZlYzYwY2FiYmU2Njc6B2lkIiVmODFj%250ANjI5ZTJjNTNmYzIxZDUzMzA1OTA4ZTBiYTZiYQ%253D%253D--1195a9a4fd4d31b2ac9a192b2419c8366621eb66;.twitter.com;/;null;true
-kdt;6f47jmZ00DMkE0IVMKmkYXoD6TfSAIA5MYoSXhxC;.twitter.com;/;Wed Nov 04 17:33:24 PST 9620;true
-lang;en;twitter.com;/;Sat May 02 18:41:37 PDT 7739;true
-auth_token;61f330724870133a7028f816bc1814be82d9bf12;.twitter.com;/;Sun May 05 18:33:24 PDT 9624;true
-remember_checked_on;1;.twitter.com;/;Sun May 05 18:33:24 PDT 9624;true
-ct0;cd9ccc02bc5d46cd31837fe1c08206f7;.twitter.com;/;Wed May 08 00:33:23 PDT 9619;true
-csrf_same_site_set;1;.twitter.com;/;Tue May 05 18:33:24 PDT 9620;true
+twid;"u=1115740636051677184";.twitter.com;/;Sun May 05 23:16:16 PDT 2024;true
+personalization_id;"v1_A14jzHpri5leXcyGacI7Pg==";.twitter.com;/;Thu May 06 23:16:15 PDT 2021;false
+dnt;1;.twitter.com;/;Sun May 05 23:16:38 PDT 2024;false
+ads_prefs;"HBISAAA=";.twitter.com;/;Sun May 05 23:16:16 PDT 2024;false
+_gid;GA1.2.546169604.1557296176;.twitter.com;/;Wed May 08 23:16:36 PDT 2019;false
+guest_id;v1%3A155729617000390983;.twitter.com;/;Thu May 06 23:16:15 PDT 2021;false
+_gat;1;.twitter.com;/;Tue May 07 23:17:15 PDT 2019;false
+_ga;GA1.2.332346182.1557296176;.twitter.com;/;Thu May 06 23:16:36 PDT 2021;false
+_twitter_sess;BAh7CiIKZmxhc2hJQzonQWN0aW9uQ29udHJvbGxlcjo6Rmxhc2g6OkZsYXNo%250ASGFzaHsABjoKQHVzZWR7ADoPY3JlYXRlZF9hdGwrCDTEFZZqAToMY3NyZl9p%250AZCIlNDU3Mjc1NmVmY2M2NDM0YzA2NDk2YmI5MjQyZjM4YjQ6B2lkIiVlM2Q1%250ANGRhYjdkMjY2ZmYxYzFkY2NmNWQ0ZmYzZWQ2YzoJdXNlcmwrCQAgVHEy6HsP--2eae11d0d704a0339d7fbfcc2d24701fbf5fc67c;.twitter.com;/;null;true
+csrf_same_site;1;.twitter.com;/;Wed May 06 23:16:16 PDT 2020;true
+kdt;qNKDp6yYo678IYf4d2b3RKMLxCVgcn4PYS7B2iAz;.twitter.com;/;Wed Nov 04 22:16:16 PST 2020;true
+lang;en;twitter.com;/;null;false
+auth_token;c07c0e70a4adfbce9b727b2278be54d7b016b646;.twitter.com;/;Sun May 05 23:16:16 PDT 2024;true
+remember_checked_on;1;.twitter.com;/;Sun May 05 23:16:16 PDT 2024;false
+ct0;957887729491af5d3fe6d79c5ff0d919;.twitter.com;/;Wed May 08 05:16:15 PDT 2019;true
+csrf_same_site_set;1;.twitter.com;/;Tue May 05 23:16:16 PDT 2020;true
