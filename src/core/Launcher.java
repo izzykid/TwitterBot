@@ -1,46 +1,40 @@
 package core;
 
-import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import apiCalls.APICall;
-import apiCalls.TweetGrabber;
-import apiCalls.TweetPoster;
-import twitter4j.TwitterException;
-import twitter4j.auth.RequestToken;
-
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JTextField;
+import javax.swing.JTabbedPane;
+import java.awt.Color;
 import javax.swing.JLabel;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.JTextField;
+import java.awt.Font;
+import javax.swing.JButton;
 import javax.swing.JPasswordField;
 
 @SuppressWarnings("serial")
 public class Launcher extends JFrame {
-
-	private JPanel contentPane;
 	private static TwitterApp app;
-	private static JTextField influencerTracker;
 	private static JTextField maxFollow;
 	private static JTextField pauseTime;
+	private static JTextField influencerTracker;
 	private static JTextField targetAmount;
-	
-	private JTextField pinTxtField;
-	private JButton btnPostTweets;
-	
-	private static TweetPoster tweetPoster = null;
-	private static boolean authenticated = false;
-	
+	private static JTextField numOfInfluencers;
+	private static JTextField numOfTweets;
+	private static JTextField userTxtField;
+	private static JPasswordField passwordTxtField;
+	private static JLabel warningLabel;
+	private static JLabel lblHello;
+	private static JButton btnPostTweets;
+
 	/**
 	 * Launch the application.
 	 */
@@ -57,125 +51,178 @@ public class Launcher extends JFrame {
 				}
 			}
 		});
-		try {
-			tweetPoster = new TweetPoster();
-		} catch (TwitterException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
-	
+
+
 	/**
 	 * Create the frame.
 	 */
 	public Launcher() {
+		setTitle("Twitter Manager");
+		File imgPath = new File("res/TwitterManagerIcon.png");
+		try {
+			setIconImage(ImageIO.read(imgPath));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		getContentPane().setBackground(new Color(204, 204, 204));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
-		contentPane.setForeground(new Color(102, 204, 204));
-		contentPane.setBackground(new Color(102, 204, 204));
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
+		setBounds(100, 100, 684, 437);
+		getContentPane().setLayout(null);
 		
-		JPanel panel = new JPanel();
-		panel.setForeground(new Color(250, 235, 215));
-		panel.setBackground(new Color(250, 235, 215));
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(215, 11, 443, 376);
+		getContentPane().add(tabbedPane);
+		
+		JPanel tab1 = new JPanel();
+		tab1.setBackground(SystemColor.window);
+		tab1.setToolTipText("");
+		tabbedPane.addTab("Follow Users", null, tab1, null);
+		tab1.setLayout(null);
+		
+		maxFollow = new JTextField();
+		maxFollow.setBounds(99, 74, 230, 43);
+		tab1.add(maxFollow);
+		maxFollow.setColumns(10);
+		
+		pauseTime = new JTextField();
+		pauseTime.setBounds(102, 183, 230, 43);
+		tab1.add(pauseTime);
+		pauseTime.setColumns(10);
+		
+		JLabel lblEnterTheNumber = new JLabel("Enter the number of users you want to follow:");
+		lblEnterTheNumber.setFont(new Font("Microsoft YaHei Light", Font.PLAIN, 16));
+		lblEnterTheNumber.setBounds(49, 29, 379, 34);
+		tab1.add(lblEnterTheNumber);
+		
+		JLabel lblEnterTheFollowing = new JLabel("Enter the rate of following (? per second):");
+		lblEnterTheFollowing.setFont(new Font("Microsoft YaHei Light", Font.PLAIN, 16));
+		lblEnterTheFollowing.setBounds(69, 142, 342, 32);
+		tab1.add(lblEnterTheFollowing);
+		
+		JButton followUsers = new JButton("Follow Users");
+		followUsers.setFont(new Font("Microsoft YaHei Light", Font.BOLD, 15));
+		followUsers.setBounds(146, 268, 143, 48);
+		tab1.add(followUsers);
+		
+		JPanel tab2 = new JPanel();
+		tab2.setLayout(null);
+		tab2.setToolTipText("");
+		tab2.setBackground(Color.WHITE);
+		tabbedPane.addTab("Update Influencers", null, tab2, null);
 		
 		influencerTracker = new JTextField();
 		influencerTracker.setColumns(10);
-		
-		JLabel lblGrabAllFollowing = new JLabel("Grab All Following of this @");
-		
-		maxFollow = new JTextField();
-		maxFollow.setColumns(10);
-		
-		JLabel lblGrabFollowersFrom = new JLabel("Grab Followers From Influencers");
-		
-		JLabel lblFollowAmount = new JLabel("Follow Amount");
-		
-		pauseTime = new JTextField();
-		pauseTime.setColumns(10);
-		
-		JLabel lblBreakTimeIn = new JLabel("Break Time In Between");
-		
-		JLabel lblseconds = new JLabel("(seconds)");
+		influencerTracker.setBounds(99, 67, 230, 43);
+		tab2.add(influencerTracker);
 		
 		targetAmount = new JTextField();
 		targetAmount.setColumns(10);
+		targetAmount.setBounds(99, 221, 230, 43);
+		tab2.add(targetAmount);
 		
-		JLabel lblGrabTargetAmount = new JLabel("Grab Target Amount");
+		JLabel lblEnterAUsername = new JLabel("Enter a username to grab their following list:");
+		lblEnterAUsername.setFont(new Font("Microsoft YaHei Light", Font.PLAIN, 16));
+		lblEnterAUsername.setBounds(49, 22, 379, 34);
+		tab2.add(lblEnterAUsername);
 		
-		pinTxtField = new JTextField();
-		pinTxtField.setColumns(11);
+		JLabel lblEnterTheTarget = new JLabel("Enter the target amount:");
+		lblEnterTheTarget.setFont(new Font("Microsoft YaHei Light", Font.PLAIN, 16));
+		lblEnterTheTarget.setBounds(120, 178, 172, 32);
+		tab2.add(lblEnterTheTarget);
 		
-		JLabel lblUsername = new JLabel("Access PIN");
-		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(pauseTime, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-								.addComponent(maxFollow, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-								.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-									.addComponent(lblBreakTimeIn)
-									.addComponent(lblFollowAmount))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(lblseconds)
-									.addGap(35))))
-						.addComponent(influencerTracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblGrabAllFollowing)
-						.addComponent(lblGrabFollowersFrom)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblGrabTargetAmount))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(pinTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblUsername)))
-					.addContainerGap())
-		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addComponent(panel, GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(maxFollow, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblFollowAmount))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(pauseTime, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblBreakTimeIn))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(pinTxtField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblUsername))
-					.addGap(31)
-					.addComponent(lblGrabAllFollowing)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(influencerTracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(41)
-					.addComponent(lblGrabFollowersFrom)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(targetAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblGrabTargetAmount))
-					.addGap(11))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(55)
-					.addComponent(lblseconds)
-					.addContainerGap(182, Short.MAX_VALUE))
-		);
+		JButton updateInfluencers = new JButton("Update Influencers");
+		updateInfluencers.setFont(new Font("Microsoft YaHei Light", Font.BOLD, 15));
+		updateInfluencers.setBounds(120, 119, 197, 48);
+		tab2.add(updateInfluencers);
 		
 		JButton grabTargetUsers = new JButton("Grab Targets");
+		grabTargetUsers.setFont(new Font("Microsoft YaHei Light", Font.BOLD, 15));
+		grabTargetUsers.setBounds(150, 272, 143, 48);
+		tab2.add(grabTargetUsers);
+		
+		JPanel tab3 = new JPanel();
+		tab3.setLayout(null);
+		tab3.setToolTipText("");
+		tab3.setBackground(Color.WHITE);
+		tabbedPane.addTab("Tweet", null, tab3, null);
+		
+		numOfInfluencers = new JTextField();
+		numOfInfluencers.setColumns(10);
+		numOfInfluencers.setBounds(99, 74, 230, 43);
+		tab3.add(numOfInfluencers);
+		
+		numOfTweets = new JTextField();
+		numOfTweets.setColumns(10);
+		numOfTweets.setBounds(102, 183, 230, 43);
+		tab3.add(numOfTweets);
+		
+		JLabel lblEnterTheNumber_1 = new JLabel("How many influencers do you want to get tweets from?");
+		lblEnterTheNumber_1.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblEnterTheNumber_1.setBounds(33, 29, 351, 34);
+		tab3.add(lblEnterTheNumber_1);
+		
+		JLabel howManyTweetsSearch = new JLabel("How many tweets do you want to search through per influencer?");
+		howManyTweetsSearch.setFont(new Font("Dialog", Font.PLAIN, 14));
+		howManyTweetsSearch.setBounds(22, 138, 414, 32);
+		tab3.add(howManyTweetsSearch);
+		
+		btnPostTweets = new JButton("Post Tweet");
+		btnPostTweets.setFont(new Font("Microsoft YaHei Light", Font.BOLD, 15));
+		btnPostTweets.setBounds(150, 253, 143, 48);
+		tab3.add(btnPostTweets);
+		
+		JPanel panel = new JPanel();
+		panel.setBackground(new Color(0, 204, 255));
+		panel.setBounds(10, 11, 206, 376);
+		getContentPane().add(panel);
+		panel.setLayout(null);
+		
+		lblHello = new JLabel("Welcome to TwitterManager");
+		lblHello.setFont(new Font("Microsoft JhengHei Light", Font.BOLD | Font.ITALIC, 11));
+		lblHello.setBounds(24, 220, 211, 26);
+		panel.add(lblHello);
+		
+		JLabel lblNewLabel = new JLabel("New label");
+		lblNewLabel.setIcon(new ImageIcon(Launcher.class.getResource("/media/Webp.net-resizeimage.png")));
+		lblNewLabel.setBounds(2, 0, 196, 210);
+		panel.add(lblNewLabel);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(new Color(0, 204, 255));
+		panel_1.setBounds(20, 251, 186, 114);
+		panel.add(panel_1);
+		panel_1.setLayout(null);
+		
+		userTxtField = new JTextField();
+		userTxtField.setText("Username");
+		userTxtField.setBounds(43, 11, 86, 20);
+		panel_1.add(userTxtField);
+		userTxtField.setColumns(10);
+		
+		JButton btnLogin = new JButton("Login");
+		btnLogin.setBounds(40, 73, 89, 23);
+		panel_1.add(btnLogin);
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				app.getButtonManager().login = true;
+			}
+		});
+		
+		passwordTxtField = new JPasswordField();
+		passwordTxtField.setText("Password");
+		passwordTxtField.setBounds(43, 42, 86, 20);
+		panel_1.add(passwordTxtField);
+		
+		warningLabel = new JLabel("");
+		warningLabel.setForeground(new Color(255, 0, 0));
+		warningLabel.setBounds(24, 209, 170, 14);
+		panel.add(warningLabel);
+		
+		//event listeners
+		
+
 		grabTargetUsers.setForeground(Color.BLACK);
 		grabTargetUsers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -183,95 +230,26 @@ public class Launcher extends JFrame {
 			}
 		});
 		
-		JButton updateInfluencers = new JButton("Update Influencers");
 		updateInfluencers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				app.getButtonManager().updateInfluencers = true;
 			}
 		});
 		
-		JButton followUsers = new JButton("Follow Users");
 		followUsers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				app.getButtonManager().followUsers = true;
 			}
 		});
 		
-		btnPostTweets = new JButton("(Req: PIN) Post Tweet");
 		btnPostTweets.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(tweetPoster.requestToken != null && pinTxtField.getText().trim().length() > 0) {
-					try {
-						if(!authenticated) {
-							tweetPoster.getAuthenticatedSession(pinTxtField.getText().trim());
-							authenticated = true;
-						}
-						
-						tweetPoster.repostBestTweet();
-					} catch (TwitterException e1) {
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
+				app.getButtonManager().postTweet = true;
 			}
 		});
-		JButton btnPINBtn = new JButton("Get PIN");
-		btnPINBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					authenticated = false;
-					tweetPoster.getRequestToken();
-					Runtime.getRuntime().exec(new String[] {"cmd", "/c", "start chrome " + tweetPoster.requestToken.getAuthorizationURL()});
-					
-				} catch (FileNotFoundException e1) {
-					e1.printStackTrace();
-				} catch (TwitterException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(followUsers, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
-								.addComponent(updateInfluencers, GroupLayout.PREFERRED_SIZE, 155, Short.MAX_VALUE)
-								.addComponent(grabTargetUsers, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)))
-						.addGroup(gl_panel.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnPINBtn, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
-								.addComponent(btnPostTweets, GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE))))
-					.addContainerGap())
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(followUsers)
-					.addGap(27)
-					.addComponent(btnPINBtn)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnPostTweets)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(updateInfluencers)
-					.addPreferredGap(ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
-					.addComponent(grabTargetUsers)
-					.addContainerGap())
-		);
-		
-		panel.setLayout(gl_panel);
-		contentPane.setLayout(gl_contentPane);
 	}
+	
 	
 	public static TwitterApp getApp(){
 		return app;
@@ -292,4 +270,53 @@ public class Launcher extends JFrame {
 	public static JTextField getTargetAmount() {
 		return targetAmount;
 	}
+
+	public static JTextField getNumOfInfluencers() {
+		return numOfInfluencers;
+	}
+
+	public static JTextField getNumOfTweets() {
+		return numOfTweets;
+	}
+
+
+	public static JTextField getUserTxtField() {
+		return userTxtField;
+	}
+
+
+	public static JPasswordField getPasswordTxtField() {
+		return passwordTxtField;
+	}
+
+
+	public static JLabel getWarningLabel() {
+		return warningLabel;
+	}
+
+
+	public static void setWarningLabel(String warningLabel) {
+		Launcher.warningLabel.setText(warningLabel);
+	}
+
+
+	public static JLabel getLblHello() {
+		return lblHello;
+	}
+
+
+	public static void setLblHello(String lblHello) {
+		Launcher.lblHello.setText(lblHello);;
+	}
+
+
+	public static void setUserTxtField(String userTxtField) {
+		Launcher.userTxtField.setText(userTxtField);
+	}
+
+
+	public static void setPasswordTxtField(String passwordTxtField) {
+		Launcher.passwordTxtField.setText(passwordTxtField);
+	}
+
 }

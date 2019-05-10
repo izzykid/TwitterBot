@@ -4,7 +4,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
+import core.Launcher;
 import twitter4j.IDs;
 import twitter4j.ResponseList;
 import twitter4j.TwitterException;
@@ -22,7 +24,7 @@ public class UpdateInfluencers extends APICall {
 	 * @throws JSONException 
 	 */
 	@SuppressWarnings("unchecked")
-	public UpdateInfluencers(String username) throws TwitterException, IOException {
+	public UpdateInfluencers(String username) throws TwitterException, IOException, ParseException {
 		System.out.println("Update Influencers");
 		IDs ids = twitter.getFriendsIDs(username, -1); // Gets following list
 		ResponseList<User> users = twitter.lookupUsers(ids.getIDs()); // Generates a list of users from their ID's
@@ -37,6 +39,8 @@ public class UpdateInfluencers extends APICall {
 		}
 		file.write(json.toString());
 		file.close();
+		
+		Launcher.setWarningLabel("Influencers Updated");
 	}
 
 }

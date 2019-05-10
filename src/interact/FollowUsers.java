@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,48 +17,40 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.NoSuchElementException;
 
-import twitter4j.IDs;
+import core.Launcher;
 import utils.StopWatch;
 import utils.Utils;
 
-public class FollowUsers {
+public class FollowUsers extends SeleniumCall {
 	
 	/**
 	 * Logs into twitter.com using ChromeDriver. Returns the WebDriver object so that it can be
 	 * used by other methods and can later be closed to prevent memory leaks.
 	 * @param targetUsers - an ArrayList of users who will be attempted to be followed
-	 * @param username - username that will be entered when logging into twitter
-	 * @param password - password that will be entered when logging into twitter
 	 * @return WebDriver - the WebDriver object that is associated with the browser used to log into twitter
 	 * @throws InterruptedException 
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */ 
-	public FollowUsers(String username, String password, int maxFollow, int pauseTime) throws InterruptedException, IOException, ParseException { 
-
+	@SuppressWarnings("unchecked")
+	public FollowUsers(int maxFollow, int pauseTime) throws InterruptedException, IOException, ParseException { 
 		// Instantiate necessary JSON variables
 		JSONParser parser = new JSONParser();
 		Object obj = parser.parse(new FileReader("res/TargetedUsers.json"));
 		JSONObject targetUsers = (JSONObject) obj;
-		Iterator it = targetUsers.entrySet().iterator();
+		Iterator<?> it = targetUsers.entrySet().iterator();
 		JSONObject followingUsers = new JSONObject();
 		FileWriter file = new FileWriter("res/TargetedUsers.json");
 		
 		// Creates a StopWatch object to pause in between following users
 		StopWatch timer = new StopWatch();
 		timer.start();
-		
-		// Prepares WebDriver to use ChromeDriver
-		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-		// Creates new WebDriver object
-		WebDriver driver = new ChromeDriver();
 		// Configure cookies if Cookies.txt has already been generated
 		Set<Cookie> cookies = driver.manage().getCookies();
-		if(new File("res/Cookies.txt").exists()) {
-			Scanner sc = new Scanner(new File("res/Cookies.txt"));
+		Scanner sc = new Scanner(new File("res/Cookies.txt"));
+		if(sc.hasNext()){
 			while(sc.hasNextLine()) {
 				String rawCookieData = sc.nextLine();
 				String[] cookieData = rawCookieData.split(";");
@@ -92,37 +83,37 @@ public class FollowUsers {
 			}
 			sc.close();
 			// Open twitter to load cookies
-			driver.get("https://www.twitter.com/" + targetUsers.get(0));
+			driver.get("https://www.twitter.com/" + Utils.getLogInInfo()[0]);
 			// Add all cookie objects to the WebDriver object
 			for(Cookie cookie : cookies) {
 				try {
 					driver.manage().addCookie(cookie);
 				}
 				catch(Exception e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
 			// Refresh the browser to load the cookies
 			driver.navigate().refresh();
 		}
-		else {
-			// Log in
-			driver.get("https://www.twitter.com/" + targetUsers.get(0));
-			Utils.waitUntilClickable("//*[@id=\"signin-dropdown\"]/div[3]/form/div[1]/input", driver, 30);
-			driver.findElement(By.xpath("//*[@id=\"signin-dropdown\"]/div[3]/form/div[1]/input")).sendKeys(username);
-			driver.findElement(By.xpath("//*[@id=\"signin-dropdown\"]/div[3]/form/div[2]/input")).sendKeys(password);
-			driver.findElement(By.xpath("//*[@id=\"signin-dropdown\"]/div[3]/form/input[1]")).click();
-		}
+//		else {
+//			// Log in
+//			String username = Utils.getLogInInfo()[0];
+//			String password = Utils.getLogInInfo()[1];
+//			driver.get("https://www.twitter.com/" + username);
+//			Utils.waitUntilVisible("//*[@id=\"signin-dropdown\"]", driver, 30);
+//			driver.findElement(By.xpath("//*[@id=\"signin-dropdown\"]/div[3]/form/div[1]/input")).sendKeys(username);
+//			driver.findElement(By.xpath("//*[@id=\"signin-dropdown\"]/div[3]/form/div[2]/input")).sendKeys(password);
+//			driver.findElement(By.xpath("//*[@id=\"signin-dropdown\"]/div[3]/form/input[1]")).click();
+//		}
 		
 		int count = 0;
 		while(it.hasNext()) {
-			System.out.println("Yes");
-			if(timer.getElapsedTime() < pauseTime * 1000)
+			// Waits pauseTime in between follows plus 0-5 seconds to make automated follows more difficult to detect
+			if(timer.getElapsedTime() < pauseTime * 1000 + Math.random() * 5000)
 				continue;
-			System.out.println("Timer");
 			if(count >= maxFollow)
 				break;
-			System.out.println("Count");
 			synchronized(this) {
 				Entry<String, String> pair = (Entry<String, String>) it.next();
 				// If already following this user, skip attempting to follow this user
@@ -135,20 +126,36 @@ public class FollowUsers {
 				// Click follow
 				int i = 0;
 				A: while(true) {
-					try { // If the account in control isn't following already, attempt to follow
+					try { 
+						// Wait for page to load
+						Utils.waitUntilVisible("/html/body", driver, 10);
+						// Check all possible xpaths
 						String status = driver.findElement(By.xpath("//*[@id=\"page-container\"]/div[1]/div/div[2]/div/div/div[2]/div/div/ul/li[" + i + "]/div/div/span[2]/button[1]/span[1]")).getText();
 						if(status.equals("Follow"))   
 							driver.findElement(By.xpath("//*[@id=\"page-container\"]/div[1]/div/div[2]/div/div/div[2]/div/div/ul/li[" + i + "]/div/div/span[2]/button[1]")).click();
-						targetUsers.put(pair.getKey(), "1");
+						String tempUsername = pair.getKey();
+						// Remove user from json and add it to followingUsers to be added back, modified, later
+						it.remove();
+						followingUsers.put(tempUsername, "1");
 						break A;
 					}
-					catch(Exception e) {
+					catch(NoSuchElementException e) {
+//						e.printStackTrace();
 						i++;
 					}
 				}
 			}
-			
 		}
+		
+		// Update accounts that have been followed in res/TargetedUsers.json
+		Iterator<?> it2 = followingUsers.entrySet().iterator();
+		while(it2.hasNext()) {
+			Entry<String, String> pair = (Entry<String, String>) it2.next();
+			System.out.println("Added: " + pair.getKey() + " to followed users");
+			targetUsers.put(pair.getKey(), pair.getValue());
+		}
+		
+		// Write updated json object to res/TargetedUsers.json
 		file.write(targetUsers.toString());
 		file.close();
 		
@@ -158,7 +165,10 @@ public class FollowUsers {
 		for(Cookie cookie : cookies) {
 			writer.append(cookie.getName() + ";" + cookie.getValue() + ";" + cookie.getDomain() + ";" + cookie.getPath() + ";" + cookie.getExpiry() + ";" + cookie.isSecure() + "\n");
 		}
+		
 		writer.close();
 		driver.close();
+		
+		Launcher.setWarningLabel(maxFollow + " users followed");
 	}
 }

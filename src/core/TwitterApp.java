@@ -8,15 +8,21 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import input.ButtonManager;
+import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import utils.Utils;
 
-public class TwitterApp implements Runnable{
+public class TwitterApp implements Runnable {
 	
 	private ButtonManager buttonManager;
 
 	private Thread thread;
 	private boolean running = false;
 	private long timer;
+
+	private static Twitter twitter;
+	private static TwitterFactory twitterFactory;
 	
 	public TwitterApp(){
 		buttonManager = new ButtonManager();
@@ -26,8 +32,32 @@ public class TwitterApp implements Runnable{
 	 * Initialize data members
 	 * @throws IOException 
 	 */
+	public void init() {
+		
+	}
+	
+	public ButtonManager getButtonManager(){
+		return buttonManager;
+	}
+	
+	public static Twitter getTwitter() {
+		return twitter;
+	}
+
+	public static void setTwitter(Twitter twitter) {
+		TwitterApp.twitter = twitter;
+	}
+
+	public static TwitterFactory getTwitterFactory() {
+		return twitterFactory;
+	}
+
+	public static void setTwitterFactory(TwitterFactory twitterFactory) {
+		TwitterApp.twitterFactory = twitterFactory;
+	}
+
 	@SuppressWarnings("unchecked")
-	public void init() throws IOException{
+	private void tick() throws TwitterException, IOException, ParseException, InterruptedException {
 		if(!new File("res/TargetedUsers.json").exists()) {
 			FileWriter file = new FileWriter("res/TargetedUsers.json");
 			JSONObject obj = new JSONObject();
@@ -42,15 +72,24 @@ public class TwitterApp implements Runnable{
 			file.write(obj.toString());
 			file.close();
 		}
-	}
-	
-	public ButtonManager getButtonManager(){
-		return buttonManager;
-	}
-
-
-	
-	private void tick() throws TwitterException, IOException, ParseException, InterruptedException {
+		if(!new File("res/APIKeys.json").exists()) {
+			FileWriter file = new FileWriter("res/APIKeys.json");
+			JSONObject obj = new JSONObject();
+			obj.put("username", "2");
+			file.write(obj.toString());
+			file.close();
+		}
+		if(!new File("res/Cookies.txt").exists()) {
+			FileWriter file = new FileWriter("res/Cookies.txt");
+			file.write("");
+			file.close();
+		}
+		try {
+			Launcher.setLblHello("Logged into " + Utils.getLogInInfo()[0]);
+		}
+		catch(Exception e) {
+			
+		}
 		buttonManager.tick();
 	}
 	
@@ -58,14 +97,10 @@ public class TwitterApp implements Runnable{
 	@Override
 	public void run() {
 		
-		try {
-			init();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		init();
 		
-		int fps = 60;
-		double timePerTick = 1000000000 / fps;
+		int tps = 1;
+		double timePerTick = 1000000000 / tps;
 		double delta = 0;
 		long now;
 		long lastTime = System.nanoTime();

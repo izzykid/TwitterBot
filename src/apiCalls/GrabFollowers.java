@@ -1,17 +1,14 @@
 package apiCalls;
 
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Scanner;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import core.Launcher;
 import twitter4j.IDs;
 import twitter4j.ResponseList;
 import twitter4j.TwitterException;
@@ -30,10 +27,18 @@ public class GrabFollowers extends APICall {
 	 */
 	@SuppressWarnings("unchecked")
 	public GrabFollowers(String influencer, int grabAmount) throws TwitterException, IOException, ParseException {
+		int initialGrab = grabAmount;
 		System.out.println("Grab " + influencer + "'s followers");
 		JSONParser parser = new JSONParser();
-		Object obj = parser.parse(new FileReader("res/TargetedUsers.json"));
-		JSONObject targetUsers = (JSONObject) obj;
+		JSONObject targetUsers;
+		try {
+			Object obj = parser.parse(new FileReader("res/TargetedUsers.json"));
+			targetUsers = (JSONObject) obj;
+		}
+		catch(Exception e) {
+			targetUsers = new JSONObject();
+		}
+		
 		FileWriter file = new FileWriter("res/TargetedUsers.json");
 		int indexOffset = 0;
 		
@@ -65,5 +70,7 @@ public class GrabFollowers extends APICall {
 		}
 		file.write(targetUsers.toString());
 		file.close();
+		
+		Launcher.setWarningLabel(initialGrab + " Targeted Users added");
 	}
 }
